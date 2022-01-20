@@ -135,11 +135,11 @@ fn register_vesting_account_with_native_token() {
                 vesting_denom: Denom::Native("uusd".to_string()),
                 vesting_amount: Uint128::new(1000000),
                 vested_amount: Uint128::zero(),
-                vesting_schedule: VestingSchedule::LinearVesting {
+                vesting_schedules: vec![VestingSchedule::LinearVesting {
                     start_time: "100".to_string(),
                     end_time: "110".to_string(),
                     vesting_amount: Uint128::new(1000000u128),
-                },
+                }],
                 claimable_amount: Uint128::zero(),
             }],
         }
@@ -261,11 +261,11 @@ fn register_vesting_account_with_cw20_token() {
                 vesting_denom: Denom::Cw20(Addr::unchecked("token0000")),
                 vesting_amount: Uint128::new(1000000),
                 vested_amount: Uint128::zero(),
-                vesting_schedule: VestingSchedule::LinearVesting {
+                vesting_schedules: vec![VestingSchedule::LinearVesting {
                     start_time: "100".to_string(),
                     end_time: "110".to_string(),
                     vesting_amount: Uint128::new(1000000u128),
-                },
+                }],
                 claimable_amount: Uint128::zero(),
             }],
         }
@@ -374,11 +374,11 @@ fn claim_native() {
                 vesting_denom: Denom::Native("uusd".to_string()),
                 vesting_amount: Uint128::new(1000000),
                 vested_amount: Uint128::new(500000),
-                vesting_schedule: VestingSchedule::LinearVesting {
+                vesting_schedules: vec![VestingSchedule::LinearVesting {
                     start_time: "100".to_string(),
                     end_time: "110".to_string(),
                     vesting_amount: Uint128::new(1000000u128),
-                },
+                }],
                 claimable_amount: Uint128::zero(),
             }],
         }
@@ -542,11 +542,11 @@ fn claim_cw20() {
                 vesting_denom: Denom::Cw20(Addr::unchecked("token0001")),
                 vesting_amount: Uint128::new(1000000),
                 vested_amount: Uint128::new(500000),
-                vesting_schedule: VestingSchedule::LinearVesting {
+                vesting_schedules: vec![VestingSchedule::LinearVesting {
                     start_time: "100".to_string(),
                     end_time: "110".to_string(),
                     vesting_amount: Uint128::new(1000000u128),
-                },
+                }],
                 claimable_amount: Uint128::zero(),
             }],
         }
@@ -676,11 +676,11 @@ fn query_vesting_account() {
                     vesting_denom: Denom::Cw20(Addr::unchecked("token0001")),
                     vesting_amount: Uint128::new(1000000),
                     vested_amount: Uint128::new(500000),
-                    vesting_schedule: VestingSchedule::LinearVesting {
+                    vesting_schedules: vec![VestingSchedule::LinearVesting {
                         start_time: "100".to_string(),
                         end_time: "110".to_string(),
                         vesting_amount: Uint128::new(1000000u128),
-                    },
+                    }],
                     claimable_amount: Uint128::new(500000),
                 },
                 VestingData {
@@ -688,11 +688,11 @@ fn query_vesting_account() {
                     vesting_denom: Denom::Native("uusd".to_string()),
                     vesting_amount: Uint128::new(1000000),
                     vested_amount: Uint128::new(500000),
-                    vesting_schedule: VestingSchedule::LinearVesting {
+                    vesting_schedules: vec![VestingSchedule::LinearVesting {
                         start_time: "100".to_string(),
                         end_time: "110".to_string(),
                         vesting_amount: Uint128::new(1000000u128),
-                    },
+                    }],
                     claimable_amount: Uint128::new(500000),
                 }
             ],
@@ -721,11 +721,11 @@ fn query_vesting_account() {
                 vesting_denom: Denom::Cw20(Addr::unchecked("token0001")),
                 vesting_amount: Uint128::new(1000000),
                 vested_amount: Uint128::new(500000),
-                vesting_schedule: VestingSchedule::LinearVesting {
+                vesting_schedules: vec![VestingSchedule::LinearVesting {
                     start_time: "100".to_string(),
                     end_time: "110".to_string(),
                     vesting_amount: Uint128::new(1000000u128),
-                },
+                }],
                 claimable_amount: Uint128::new(500000),
             },],
         }
@@ -753,11 +753,11 @@ fn query_vesting_account() {
                 vesting_denom: Denom::Native("uusd".to_string()),
                 vesting_amount: Uint128::new(1000000),
                 vested_amount: Uint128::new(500000),
-                vesting_schedule: VestingSchedule::LinearVesting {
+                vesting_schedules: vec![VestingSchedule::LinearVesting {
                     start_time: "100".to_string(),
                     end_time: "110".to_string(),
                     vesting_amount: Uint128::new(1000000u128),
-                },
+                }],
                 claimable_amount: Uint128::new(500000),
             }],
         }
