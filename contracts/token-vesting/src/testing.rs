@@ -763,3 +763,128 @@ fn query_vesting_account() {
         }
     );
 }
+
+
+#[test]
+fn add_multiple_schedules() {
+    let mut deps = mock_dependencies(&[]);
+    let _res = instantiate(
+        deps.as_mut(),
+        mock_env(),
+        mock_info("addr0000", &[]),
+        InstantiateMsg {},
+    )
+    .unwrap();
+
+    // init env to time 100
+    let mut env = mock_env();
+    env.block.time = Timestamp::from_seconds(100);
+
+    let msg = ExecuteMsg::RegisterVestingAccount {
+        master_address: None,
+        address: "addr0001".to_string(),
+        vesting_schedule: VestingSchedule::LinearVesting {
+            start_time: "100".to_string(),
+            end_time: "110".to_string(),
+            vesting_amount: Uint128::new(1000000u128),
+        },
+    };
+
+
+    // invalid range
+    let info = mock_info("addr0000", &[Coin::new(1000000u128, "uusd")]);
+    let _ = execute(deps.as_mut(), env.clone(), info, msg).unwrap();
+
+    let msg = ExecuteMsg::RegisterVestingAccount {
+        master_address: None,
+        address: "addr0001".to_string(),
+        vesting_schedule: VestingSchedule::LinearVesting {
+            start_time: "105".to_string(),
+            end_time: "115".to_string(),
+            vesting_amount: Uint128::new(1000000u128),
+        },
+    };
+
+    let info = mock_info("addr0000", &[Coin::new(1000000u128, "uusd")]);
+    let res = execute(deps.as_mut(), env.clone(), info, msg);
+
+    match res.unwrap_err() {
+        StdError::GenericErr { msg, .. } => {
+            assert_eq!(msg, "invalid time range")
+        }
+        _ => panic!("should not enter"),
+    }
+
+    // valid
+    let msg = ExecuteMsg::RegisterVestingAccount {
+        master_address: None,
+        address: "addr0001".to_string(),
+        vesting_schedule: VestingSchedule::LinearVesting {
+            start_time: "120".to_string(),
+            end_time: "130".to_string(),
+            vesting_amount: Uint128::new(1000000u128),
+        },
+    };
+
+    let info = mock_info("addr0000", &[Coin::new(1000000u128, "uusd")]);
+    let _ = execute(deps.as_mut(), env.clone(), info, msg).unwrap();
+
+    // valid and the one between others
+    let msg = ExecuteMsg::RegisterVestingAccount {
+        master_address: None,
+        address: "addr0001".to_string(),
+        vesting_schedule: VestingSchedule::LinearVesting {
+            start_time: "110".to_string(),
+            end_time: "120".to_string(),
+            vesting_amount: Uint128::new(1000000u128),
+        },
+    };
+
+    let info = mock_info("addr0000", &[Coin::new(1000000u128, "uusd")]);
+    let _ = execute(deps.as_mut(), env.clone(), info, msg).unwrap();
+
+    env.block.time = Timestamp::from_seconds(115);
+
+    assert_eq!(
+        from_binary::<VestingAccountResponse>(
+            &query(
+                deps.as_ref(),
+                env.clone(),
+                QueryMsg::VestingAccount {
+                    address: "addr0001".to_string(),
+                    start_after: None,
+                    limit: Some(1),
+                },
+            )
+            .unwrap()
+        )
+        .unwrap(),
+        VestingAccountResponse {
+            address: "addr0001".to_string(),
+            vestings: vec![VestingData {
+                master_address: None,
+                vesting_denom: Denom::Native("uusd".to_string()),
+                vesting_amount: Uint128::new(3000000),
+                vested_amount: Uint128::new(1500000),
+                vesting_schedules: vec![
+                    VestingSchedule::LinearVesting {
+                        start_time: "100".to_string(),
+                        end_time: "110".to_string(),
+                        vesting_amount: Uint128::new(1000000u128),
+                    },
+                    VestingSchedule::LinearVesting {
+                        start_time: "110".to_string(),
+                        end_time: "120".to_string(),
+                        vesting_amount: Uint128::new(1000000u128),
+                    },
+                    VestingSchedule::LinearVesting {
+                        start_time: "120".to_string(),
+                        end_time: "130".to_string(),
+                        vesting_amount: Uint128::new(1000000u128),
+                    },
+                ],
+                claimable_amount: Uint128::new(1500000),
+            },],
+        }
+    );
+}
